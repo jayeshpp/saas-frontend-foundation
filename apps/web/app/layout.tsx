@@ -1,8 +1,8 @@
 import type { Metadata } from "next";
 
 import { DEFAULT_TENANT_SLUG, TENANT_HEADER, getTenantBySlug } from "@saas/tenants";
+import { Analytics } from "@vercel/analytics/react";
 import { headers } from "next/headers";
-
 
 import "./globals.css";
 import { Providers } from "./providers";
@@ -24,6 +24,7 @@ export default async function RootLayout(props: { children: React.ReactNode }) {
     <html lang="en">
       <body>
         <Providers tenant={tenant}>{props.children}</Providers>
+        <Analytics />
       </body>
     </html>
   );
