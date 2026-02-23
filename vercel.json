@@ -1,0 +1,5 @@
+{
+  "installCommand": "npm ci",
+  "buildCommand": "npx turbo run build --filter=@saas/web"
+}
+
