@@ -5,6 +5,7 @@ import type { Action } from "@saas/permissions";
 
 import { useAuth } from "@saas/auth";
 import { can, guard } from "@saas/permissions";
+import { Button } from "@saas/ui";
 import { LayoutShell } from "@saas/ui";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
@@ -62,6 +63,11 @@ export default function DashboardLayout(props: { children: React.ReactNode }) {
       nav={nav}
       headerRight={
         <div className="flex flex-wrap items-center gap-2">
+          <Link href="/architecture">
+            <Button variant="outline" size="sm">
+              Architecture
+            </Button>
+          </Link>
           <TenantSwitcher />
           <UserSwitcher />
         </div>

@@ -63,7 +63,7 @@ All authorization is centralized in `@saas/permissions`:
   - `guard(subject, requiredActions)`
   - `<RequirePermission />` for UI-level gating
 
-In the demo app:
+In the demo app: [Demo](https://saas-frontend-foundation-web.vercel.app?utm_source=github&utm_medium=readme&utm_campaign=saas-frontend-foundation&utm_content=demo-link)
 
 - **Route-level guard** is implemented in `apps/web/app/dashboard/layout.tsx` using `requiredActionsForPath()` from `apps/web/app/dashboard/route-permissions.ts`.
 - **UI-level gating** is used for individual buttons (e.g. “Invite user” requires `users.manage`).
