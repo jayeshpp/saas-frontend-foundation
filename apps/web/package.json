@@ -1,0 +1,37 @@
+{
+  "name": "@saas/web",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "eslint .",
+    "typecheck": "tsc -p tsconfig.json --noEmit"
+  },
+  "dependencies": {
+    "@saas/api-client": "0.0.0",
+    "@saas/auth": "0.0.0",
+    "@saas/hooks": "0.0.0",
+    "@saas/permissions": "0.0.0",
+    "@saas/tenants": "0.0.0",
+    "@saas/types": "0.0.0",
+    "@saas/ui": "0.0.0",
+    "@tanstack/react-query": "^5.85.0",
+    "next": "^15.5.0",
+    "react": "^19.1.0",
+    "react-dom": "^19.1.0"
+  },
+  "devDependencies": {
+    "@saas/config": "0.0.0",
+    "@types/node": "^22.18.0",
+    "@types/react": "^19.1.12",
+    "@types/react-dom": "^19.1.9",
+    "autoprefixer": "^10.4.21",
+    "eslint-config-next": "^15.5.0",
+    "postcss": "^8.5.6",
+    "tailwindcss": "^3.4.17"
+  }
+}
+

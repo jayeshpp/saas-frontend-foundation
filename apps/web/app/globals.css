@@ -1,0 +1,20 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  /* default brand vars (overridden per-tenant via ThemeProvider) */
+  --brand-primary: 222 84% 56%;
+  --brand-secondary: 270 80% 60%;
+  --brand-accent: 160 84% 39%;
+}
+
+html,
+body {
+  height: 100%;
+}
+
+body {
+  background: white;
+}
+
