@@ -3,7 +3,7 @@ import type { NextRequest } from "next/server";
 import { TENANT_COOKIE, TENANT_HEADER, resolveTenant } from "@saas/tenants";
 import { NextResponse } from "next/server";
 
-export function middleware(req: NextRequest) {
+export function proxy(req: NextRequest) {
   const tenantCookie = req.cookies.get(TENANT_COOKIE)?.value ?? null;
   const tenantHeader = req.headers.get(TENANT_HEADER);
 
