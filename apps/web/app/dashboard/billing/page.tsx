@@ -1,12 +1,13 @@
 "use client";
 
-
-
 import { useAuth } from "@saas/auth";
+import { featureLock } from "@saas/entitlements";
+import { useFeatureFlags } from "@saas/feature-flags";
 import { can } from "@saas/permissions";
 import { Button, UsageMeter } from "@saas/ui";
 import { useQuery } from "@tanstack/react-query";
 import * as React from "react";
+
 
 import { useApiClient } from "../../lib/use-api-client";
 import { useTenant } from "../../tenant-context";
@@ -14,9 +15,12 @@ import { useTenant } from "../../tenant-context";
 export default function BillingPage(): React.ReactElement {
   const api = useApiClient();
   const { tenant } = useTenant();
+  const { flags } = useFeatureFlags();
   const { state } = useAuth();
   const subject = state.status === "authenticated" ? { role: state.user.role } : null;
   const canManage = subject ? can(subject, "billing.manage") : false;
+  const lock = featureLock(tenant, flags, "billingManagement");
+  const canManageWithPlan = canManage && !lock.locked;
 
   const summary = useQuery({
     queryKey: ["billing", tenant.id],
@@ -31,8 +35,15 @@ export default function BillingPage(): React.ReactElement {
           <div className="text-sm text-zinc-600 dark:text-zinc-400">
             Billing data is tenant-scoped; sensitive actions are RBAC-gated.
           </div>
+          {canManage && lock.locked ? (
+            <div className="mt-2 text-xs text-amber-700 dark:text-amber-400">{lock.reason}</div>
+          ) : null}
         </div>
-        <Button variant={canManage ? "primary" : "outline"} disabled={!canManage} title="Requires billing.manage">
+        <Button
+          variant={canManageWithPlan ? "primary" : "outline"}
+          disabled={!canManageWithPlan}
+          title={!canManage ? "Requires billing.manage" : lock.locked ? lock.reason : undefined}
+        >
           Manage subscription
         </Button>
       </div>

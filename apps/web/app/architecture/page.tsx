@@ -5,6 +5,9 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import * as React from "react";
 
+import { EnvironmentBadge } from "../components/EnvironmentBadge";
+import { FeatureFlagsButton } from "../components/FeatureFlagsButton";
+import { ImpersonateUserButton } from "../components/ImpersonateUserButton";
 import { TenantSwitcher } from "../components/TenantSwitcher";
 import { UserSwitcher } from "../components/UserSwitcher";
 import { useTenant } from "../tenant-context";
@@ -35,6 +38,9 @@ export default function ArchitecturePage(): React.ReactElement {
       ]}
       headerRight={
         <div className="flex flex-wrap items-center gap-2">
+          <EnvironmentBadge />
+          <FeatureFlagsButton />
+          <ImpersonateUserButton />
           <Link href="/dashboard/overview">
             <Button variant="outline" size="sm">
               Back to dashboard

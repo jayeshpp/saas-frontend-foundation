@@ -5,6 +5,7 @@
 import type { TenantConfig } from "@saas/tenants";
 
 import { AuthProvider } from "@saas/auth";
+import { FeatureFlagsProvider } from "@saas/feature-flags";
 import { getTenantThemeTokens } from "@saas/tenants";
 import { ThemeProvider } from "@saas/ui";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
@@ -31,11 +32,13 @@ export function Providers(props: {
 
   return (
     <QueryClientProvider client={queryClient}>
-      <AuthProvider>
-        <TenantProvider initialTenant={props.tenant}>
-          <TenantThemeBoundary>{props.children}</TenantThemeBoundary>
-        </TenantProvider>
-      </AuthProvider>
+      <FeatureFlagsProvider>
+        <AuthProvider>
+          <TenantProvider initialTenant={props.tenant}>
+            <TenantThemeBoundary>{props.children}</TenantThemeBoundary>
+          </TenantProvider>
+        </AuthProvider>
+      </FeatureFlagsProvider>
     </QueryClientProvider>
   );
 }

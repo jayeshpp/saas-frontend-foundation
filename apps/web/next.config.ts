@@ -5,6 +5,8 @@ const nextConfig: NextConfig = {
   transpilePackages: [
     "@saas/api-client",
     "@saas/auth",
+    "@saas/entitlements",
+    "@saas/feature-flags",
     "@saas/hooks",
     "@saas/permissions",
     "@saas/tenants",

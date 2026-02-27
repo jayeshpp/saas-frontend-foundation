@@ -13,6 +13,8 @@
   "dependencies": {
     "@saas/api-client": "0.0.0",
     "@saas/auth": "0.0.0",
+    "@saas/entitlements": "0.0.0",
+    "@saas/feature-flags": "0.0.0",
     "@saas/hooks": "0.0.0",
     "@saas/permissions": "0.0.0",
     "@saas/tenants": "0.0.0",
