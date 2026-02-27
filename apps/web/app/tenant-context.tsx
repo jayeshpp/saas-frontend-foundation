@@ -4,6 +4,7 @@
 
 import type { TenantConfig } from "@saas/tenants";
 
+import { useAuth } from "@saas/auth";
 import { useDemoTenantStore } from "@saas/hooks";
 import { getTenantBySlug, listTenants } from "@saas/tenants";
 import { useRouter } from "next/navigation";
@@ -20,6 +21,7 @@ const TenantContext = React.createContext<TenantContextValue | null>(null);
 export function TenantProvider(props: { initialTenant: TenantConfig; children: React.ReactNode }) {
   const router = useRouter();
   const { tenantSlug, setTenantSlug } = useDemoTenantStore();
+  const { state, signOut } = useAuth();
   const availableTenants = React.useMemo(() => listTenants(), []);
 
   const [tenant, setTenant] = React.useState<TenantConfig>(() => {
@@ -31,6 +33,11 @@ export function TenantProvider(props: { initialTenant: TenantConfig; children: R
     if (t) setTenant(t);
   }, [tenantSlug]);
 
+  React.useEffect(() => {
+    if (state.status !== "authenticated") return;
+    if (state.user.tenantId !== tenant.id) signOut();
+  }, [signOut, state, tenant.id]);
+
   const value = React.useMemo<TenantContextValue>(() => {
     return {
       tenant,
@@ -38,11 +45,12 @@ export function TenantProvider(props: { initialTenant: TenantConfig; children: R
       setTenantSlug: (slug) => {
         const next = getTenantBySlug(slug);
         if (next) setTenant(next);
+        if (state.status === "authenticated" && next && state.user.tenantId !== next.id) signOut();
         setTenantSlug(slug);
         router.refresh();
       }
     };
-  }, [availableTenants, router, setTenantSlug, tenant]);
+  }, [availableTenants, router, setTenantSlug, signOut, state, tenant]);
 
   return <TenantContext.Provider value={value}>{props.children}</TenantContext.Provider>;
 }

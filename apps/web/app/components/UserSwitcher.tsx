@@ -5,10 +5,15 @@ import { ROLE_LABEL } from "@saas/permissions";
 import { Button, Modal } from "@saas/ui";
 import * as React from "react";
 
+import { useTenant } from "../tenant-context";
+
 export function UserSwitcher(): React.ReactElement {
+  const { tenant } = useTenant();
   const { state, signIn, signOut, listMockUsers } = useAuth();
   const [open, setOpen] = React.useState(false);
-  const users = React.useMemo(() => listMockUsers(), [listMockUsers]);
+  const users = React.useMemo(() => {
+    return listMockUsers().filter((u) => u.tenantId === tenant.id);
+  }, [listMockUsers, tenant.id]);
   const activeUserId = state.status === "authenticated" ? state.user.id : null;
 
   return (
@@ -47,6 +52,14 @@ export function UserSwitcher(): React.ReactElement {
         }
       >
         <div className="space-y-2">
+          <div className="text-xs text-zinc-500 dark:text-zinc-400">
+            Tenant scoped: {tenant.branding.name}
+          </div>
+          {users.length === 0 ? (
+            <div className="rounded-lg border border-dashed border-zinc-200 p-3 text-sm text-zinc-600 dark:border-zinc-800 dark:text-zinc-400">
+              No seeded users for this tenant.
+            </div>
+          ) : null}
           {users.map((u) => {
             const isActive = activeUserId === u.id;
 

@@ -39,6 +39,48 @@ const USERS: SeedUser[] = [
     role: "admin",
     email: "admin@globex.example",
     displayName: "Glen (Globex Admin)"
+  },
+  {
+    id: "user_8",
+    tenantId: "tenant_globex",
+    role: "manager",
+    email: "manager@globex.example",
+    displayName: "Gia (Globex Manager)"
+  },
+  {
+    id: "user_9",
+    tenantId: "tenant_globex",
+    role: "viewer",
+    email: "viewer@globex.example",
+    displayName: "Vince (Globex Viewer)"
+  },
+  {
+    id: "user_10",
+    tenantId: "tenant_globex",
+    role: "admin",
+    email: "ops@globex.example",
+    displayName: "Owen (Globex Ops Admin)"
+  },
+  {
+    id: "user_5",
+    tenantId: "tenant_initech",
+    role: "admin",
+    email: "admin@initech.example",
+    displayName: "Ivy (Initech Admin)"
+  },
+  {
+    id: "user_6",
+    tenantId: "tenant_initech",
+    role: "manager",
+    email: "manager@initech.example",
+    displayName: "Miles (Initech Manager)"
+  },
+  {
+    id: "user_7",
+    tenantId: "tenant_initech",
+    role: "viewer",
+    email: "viewer@initech.example",
+    displayName: "Vik (Initech Viewer)"
   }
 ];
 
