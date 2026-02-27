@@ -5,20 +5,33 @@ import { ROLE_LABEL } from "@saas/permissions";
 import { Button, Modal } from "@saas/ui";
 import * as React from "react";
 
+import { clearOriginalUserId, loadOriginalUserId } from "../lib/impersonation";
 import { useTenant } from "../tenant-context";
 
 export function UserSwitcher(): React.ReactElement {
   const { tenant } = useTenant();
   const { state, signIn, signOut, listMockUsers } = useAuth();
   const [open, setOpen] = React.useState(false);
+  const [isImpersonating, setIsImpersonating] = React.useState(() => Boolean(loadOriginalUserId()));
   const users = React.useMemo(() => {
     return listMockUsers().filter((u) => u.tenantId === tenant.id);
   }, [listMockUsers, tenant.id]);
   const activeUserId = state.status === "authenticated" ? state.user.id : null;
 
+  React.useEffect(() => {
+    if (!open) return;
+    setIsImpersonating(Boolean(loadOriginalUserId()));
+  }, [open]);
+
   return (
     <>
-      <Button variant="outline" size="sm" onClick={() => setOpen(true)}>
+      <Button
+        variant="outline"
+        size="sm"
+        disabled={isImpersonating}
+        title={isImpersonating ? "Revert impersonation to switch users" : undefined}
+        onClick={() => setOpen(true)}
+      >
         {state.status === "authenticated" ? `User: ${state.user.displayName}` : "Sign in"}
       </Button>
 
@@ -38,6 +51,7 @@ export function UserSwitcher(): React.ReactElement {
                   variant="ghost"
                   onClick={() => {
                     signOut();
+                    clearOriginalUserId();
                     setOpen(false);
                   }}
                 >
@@ -55,6 +69,11 @@ export function UserSwitcher(): React.ReactElement {
           <div className="text-xs text-zinc-500 dark:text-zinc-400">
             Tenant scoped: {tenant.branding.name}
           </div>
+          {isImpersonating ? (
+            <div className="rounded-lg border border-amber-200 bg-amber-50 p-3 text-sm text-amber-900 dark:border-amber-900/40 dark:bg-amber-950/30 dark:text-amber-100">
+              Impersonation is active. Revert it to switch users.
+            </div>
+          ) : null}
           {users.length === 0 ? (
             <div className="rounded-lg border border-dashed border-zinc-200 p-3 text-sm text-zinc-600 dark:border-zinc-800 dark:text-zinc-400">
               No seeded users for this tenant.
@@ -62,19 +81,23 @@ export function UserSwitcher(): React.ReactElement {
           ) : null}
           {users.map((u) => {
             const isActive = activeUserId === u.id;
+            const disabled = isActive || isImpersonating;
 
             return (
               <button
                 key={u.id}
                 type="button"
                 aria-current={isActive ? "true" : undefined}
-                disabled={isActive}
+                disabled={disabled}
                 onClick={() => {
+                  if (isImpersonating) return;
                   signIn(u.id);
                   setOpen(false);
                 }}
                 className="flex w-full items-center justify-between rounded-lg border border-zinc-200 px-3 py-2 text-left hover:bg-zinc-50 disabled:cursor-not-allowed disabled:opacity-70 dark:border-zinc-800 dark:hover:bg-zinc-900"
-                title={isActive ? "Currently active user" : undefined}
+                title={
+                  isActive ? "Currently active user" : isImpersonating ? "Revert impersonation to switch users" : undefined
+                }
               >
                 <div className="min-w-0">
                   <div className="truncate text-sm font-medium">{u.displayName}</div>

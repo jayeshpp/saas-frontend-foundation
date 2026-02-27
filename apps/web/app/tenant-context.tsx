@@ -10,6 +10,8 @@ import { getTenantBySlug, listTenants } from "@saas/tenants";
 import { useRouter } from "next/navigation";
 import * as React from "react";
 
+import { clearOriginalUserId } from "./lib/impersonation";
+
 type TenantContextValue = {
   tenant: TenantConfig;
   setTenantSlug(slug: string): void;
@@ -35,7 +37,10 @@ export function TenantProvider(props: { initialTenant: TenantConfig; children: R
 
   React.useEffect(() => {
     if (state.status !== "authenticated") return;
-    if (state.user.tenantId !== tenant.id) signOut();
+    if (state.user.tenantId !== tenant.id) {
+      signOut();
+      clearOriginalUserId();
+    }
   }, [signOut, state, tenant.id]);
 
   const value = React.useMemo<TenantContextValue>(() => {
@@ -45,7 +50,10 @@ export function TenantProvider(props: { initialTenant: TenantConfig; children: R
       setTenantSlug: (slug) => {
         const next = getTenantBySlug(slug);
         if (next) setTenant(next);
-        if (state.status === "authenticated" && next && state.user.tenantId !== next.id) signOut();
+        if (state.status === "authenticated" && next && state.user.tenantId !== next.id) {
+          signOut();
+          clearOriginalUserId();
+        }
         setTenantSlug(slug);
         router.refresh();
       }

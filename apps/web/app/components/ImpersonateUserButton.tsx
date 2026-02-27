@@ -9,21 +9,8 @@ import { ROLE_LABEL } from "@saas/permissions";
 import { Button, Modal } from "@saas/ui";
 import * as React from "react";
 
+import { loadOriginalUserId, setOriginalUserId } from "../lib/impersonation";
 import { useTenant } from "../tenant-context";
-
-const IMPERSONATION_KEY = "saas.foundation.impersonation.v1";
-
-function loadOriginalUserId(): UserId | null {
-  if (typeof window === "undefined") return null;
-  const raw = window.localStorage.getItem(IMPERSONATION_KEY);
-  return raw ? (raw as UserId) : null;
-}
-
-function setOriginalUserId(id: UserId | null): void {
-  if (typeof window === "undefined") return;
-  if (!id) window.localStorage.removeItem(IMPERSONATION_KEY);
-  else window.localStorage.setItem(IMPERSONATION_KEY, id);
-}
 
 export function ImpersonateUserButton(): React.ReactElement | null {
   const { tenant } = useTenant();
@@ -47,15 +34,22 @@ export function ImpersonateUserButton(): React.ReactElement | null {
 
   const isImpersonating = Boolean(originalUserId);
 
-  if (!isAdmin) return null;
+  // If you're impersonating, keep the control visible so you can always revert.
+  if (!isAdmin && !isImpersonating) return null;
 
   return (
     <>
       <Button
         variant={isImpersonating ? "secondary" : "outline"}
         size="sm"
-        disabled={locked.locked}
-        title={locked.locked ? locked.reason : "Admin-only demo: switch identity quickly"}
+        disabled={!isImpersonating && locked.locked}
+        title={
+          isImpersonating
+            ? "Impersonation active — open to revert"
+            : locked.locked
+              ? locked.reason
+              : "Admin-only demo: switch identity quickly"
+        }
         onClick={() => setOpen(true)}
       >
         {isImpersonating ? "Impersonating" : "Impersonate"}
@@ -93,10 +87,16 @@ export function ImpersonateUserButton(): React.ReactElement | null {
           </div>
 
           <div className="space-y-2">
+            {!isAdmin ? (
+              <div className="rounded-lg border border-dashed border-zinc-200 p-3 text-sm text-zinc-600 dark:border-zinc-800 dark:text-zinc-400">
+                You’re not currently an admin. Revert impersonation to regain access to impersonation tools.
+              </div>
+            ) : null}
             {users.map((u) => (
               <button
                 key={u.id}
                 type="button"
+                disabled={!isAdmin || locked.locked}
                 onClick={() => {
                   if (state.status === "authenticated" && !originalUserId) {
                     setOriginalUserId(state.user.id);
@@ -105,7 +105,7 @@ export function ImpersonateUserButton(): React.ReactElement | null {
                   signIn(u.id);
                   setOpen(false);
                 }}
-                className="flex w-full items-center justify-between rounded-lg border border-zinc-200 px-3 py-2 text-left hover:bg-zinc-50 dark:border-zinc-800 dark:hover:bg-zinc-900"
+                className="flex w-full items-center justify-between rounded-lg border border-zinc-200 px-3 py-2 text-left hover:bg-zinc-50 disabled:cursor-not-allowed disabled:opacity-70 dark:border-zinc-800 dark:hover:bg-zinc-900"
               >
                 <div className="min-w-0">
                   <div className="truncate text-sm font-medium">{u.displayName}</div>
